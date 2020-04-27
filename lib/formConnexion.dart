@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:trensfert_argent_mobile/accueil.dart';
 import 'package:trensfert_argent_mobile/authService.dart';
-import 'package:trensfert_argent_mobile/user.dart';
 class FormConnexion extends StatefulWidget {
   @override
   _FormConnexionState createState() => _FormConnexionState();
@@ -57,10 +56,8 @@ class _FormConnexionState extends State<FormConnexion> {
                       if(_formKey.currentState.validate()){
                         _formKey.currentState.save();
                         setState(() {
-                         var user =AuthService().login(_username, _password);
-                         print(user);
-                   //   if( )
-                       Navigator.push(context, MaterialPageRoute(builder: (context)=>Accueil()));
+                         AuthService().login(_username, _password);
+                         Navigator.push(context, MaterialPageRoute(builder: (context)=>Accueil()));
                         });
 
                       }

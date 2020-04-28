@@ -1,10 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:trensfert_argent_mobile/authService.dart';
 import 'package:trensfert_argent_mobile/menu.dart';
-import 'package:trensfert_argent_mobile/service/userService.dart';
-import '../modele/user.dart';
 import 'package:http/http.dart' as http;
-import 'dart:async';
 import 'dart:convert';
+
+import 'package:trensfert_argent_mobile/widget/userView.dart';
 
 
 class UserList extends StatefulWidget {
@@ -13,33 +14,38 @@ class UserList extends StatefulWidget {
 }
 
 class _UserListState extends State<UserList> {
+  var sharedPreferences ;
     var users;
      final baseUrl ='http://10.0.2.2:8000/api';
-   getUsers(){
+    AuthService authService = AuthService();
+   getUsers() async{
      String url='$baseUrl/users';
-     http.get(url).then(
-       (data){
-         setState(() {
-           users = json.decode(data.body);
-         });
-       }
-     ).catchError((error){
-       print(error);
-     });
-     
+        var token = await  authService.getToken();
+        print(token);
+         http.get(
+               url,
+               headers: {HttpHeaders.authorizationHeader: "bearer $token"},
+          ).then(
+            (data){
+             setState(() {
+              users = json.decode(data.body);
+            });
+         }
+          ).catchError((error){
+            print(error);
+          });     
    }
+
   @override
   void initState() {
     super.initState();
     getUsers();
-    print(users);
-
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar:AppBar(title: Text("Les utilisateurs"),backgroundColor: Colors.teal,),
-      drawer: Menu(),
+      //drawer: Menu(),
       body: (users == null ?
       Center(child: CircularProgressIndicator(),)
       :ListView.builder(
@@ -60,7 +66,16 @@ class _UserListState extends State<UserList> {
                         child: FlatButton(
                         child:Icon(Icons.edit),
                        // color: Colors.blueGrey,
-                        onPressed: (){},
+                        onPressed: (){
+                          var id = users['hydra:member'][index]['id'];
+                          print(id);
+                           Navigator.push(
+                      context,
+                     MaterialPageRoute(
+                         builder: (context) =>UserView(id: id,),
+                    )
+                   );
+                        },
                     ),
                   ),
                     Text("${users['hydra:member'][index]['username']}", style: TextStyle(fontSize: 22),)

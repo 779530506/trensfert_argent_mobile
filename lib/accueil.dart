@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:trensfert_argent_mobile/menu.dart';
 class Accueil extends StatefulWidget {
+  String token;
+  Accueil({this.token});
   @override
   _AccueilState createState() => _AccueilState();
 }

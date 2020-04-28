@@ -4,7 +4,7 @@ class User{
   String token;
   String nom;
   String prenom;
-  String tel;
+  String telephon;
   String email;
   String dateNaissance;
   String roles;
@@ -18,7 +18,7 @@ class User{
     this.dateNaissance,
     this.email,
     this.roles,
-    this.tel,
+    this.telephon,
     this.adresse
      });
  factory User.fromJson(Map<String, dynamic> json) {
@@ -30,7 +30,7 @@ class User{
       prenom: json['prenom'],
       email: json['email'],
       dateNaissance: json['dateNaissance'],
-      tel: json['tel'],
+      telephon: json['telephon'],
       roles: json['roles'],
       adresse: json['adresse'],
     );

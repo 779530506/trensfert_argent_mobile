@@ -105,7 +105,7 @@ class _MenuState extends State<Menu> {
                 onTap: (){
                 Navigator.of(context).pop();
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp() ));
-                AuthService().logout();
+               // AuthService().logout();
                 },
               ),  
        ], 

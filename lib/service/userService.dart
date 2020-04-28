@@ -7,15 +7,5 @@ import 'dart:convert';
 class UserService{
 
    final baseUrl ='http://10.0.2.2:8000/api';
-   Future<List< User>> getUsers() async{
-     String url='$baseUrl/users';
-     final response = await http.get(url);
-     print(response.body);
-      if (response.statusCode == 200) {
-    return json.decode(response.body);
-      } else {
-    throw Exception('Failed to load album');
-      }
-     
-   }
+   
 }

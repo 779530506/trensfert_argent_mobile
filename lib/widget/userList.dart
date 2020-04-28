@@ -16,10 +16,15 @@ class UserList extends StatefulWidget {
 class _UserListState extends State<UserList> {
   var sharedPreferences ;
     var users;
+    int currentPage=1;
+    int size=7;
+    int totalPage;
+    int usersLength;
+     ScrollController _scrollController = new ScrollController();
      final baseUrl ='http://10.0.2.2:8000/api';
     AuthService authService = AuthService();
    getUsers() async{
-     String url='$baseUrl/users';
+     String url='$baseUrl/users?page=$currentPage';
         var token = await  authService.getToken();
         print(token);
          http.get(
@@ -29,6 +34,12 @@ class _UserListState extends State<UserList> {
             (data){
              setState(() {
               users = json.decode(data.body);
+              usersLength = users['hydra:totalItems'];
+              if(usersLength % size == 0)
+              totalPage = usersLength ~/ size;
+              else
+              totalPage = (usersLength/size).floor();
+              print(totalPage);
             });
          }
           ).catchError((error){
@@ -40,6 +51,20 @@ class _UserListState extends State<UserList> {
   void initState() {
     super.initState();
     getUsers();
+     _scrollController.addListener((){
+      if(_scrollController.position.pixels==_scrollController.position.maxScrollExtent){
+        if(currentPage<totalPage){
+        ++currentPage;
+        this.getUsers();
+        }
+
+      }
+    });
+  }
+   @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
   }
   @override
   Widget build(BuildContext context) {
@@ -49,6 +74,7 @@ class _UserListState extends State<UserList> {
       body: (users == null ?
       Center(child: CircularProgressIndicator(),)
       :ListView.builder(
+        controller: _scrollController,
         itemCount: (users==null ? 0 : users.length),
         itemBuilder: (context, index){
           return Card(

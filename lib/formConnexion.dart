@@ -2,27 +2,18 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:trensfert_argent_mobile/accueil.dart';
 import 'package:trensfert_argent_mobile/authService.dart';
 class FormConnexion extends StatefulWidget {
   @override
   _FormConnexionState createState() => _FormConnexionState();
 }
-
 class _FormConnexionState extends State<FormConnexion> {
-      final _formKey = GlobalKey<FormState>();
-    String _username ;
-    String _password;
+    final _formKey = GlobalKey<FormState>();
     final TextEditingController _usernameController = TextEditingController();
    final TextEditingController _passwordController = TextEditingController();
 
     var auth = AuthService();
     SharedPreferences sharedPreferences;
- // Future<String> get tokenOrEmpty async {
-//   var token = await storage.read(key: "token");
-//   if(token == null) return "";
-//   return token;
-// }
   setToken(String token) async {
      sharedPreferences = await SharedPreferences.getInstance();
      await sharedPreferences.setString('token', token);
@@ -51,12 +42,10 @@ class _FormConnexionState extends State<FormConnexion> {
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                     controller: _usernameController,
                    decoration: InputDecoration (
-
                      icon: Icon( Icons.person,size: 30),
                      labelText: "username",
                    ),
                     validator: (input) => input.isEmpty ?"ce champ est obligatoir":null,
-                    // onSaved: (input) => _username=input,
                   ),
                 ),
                 Padding(
@@ -69,7 +58,6 @@ class _FormConnexionState extends State<FormConnexion> {
                      icon: Icon( Icons.lock,size: 30 ,),
                    ),
                    validator: (input) => input.length<4 ?"minimum 4 caractere":null,
-                  //  onSaved: (input) => _password=input,
                   ),
                 ),
                 Padding(
@@ -85,14 +73,7 @@ class _FormConnexionState extends State<FormConnexion> {
                  var token = await auth.attemptLogIn(username, password);
                  if(token != null) {
                    setToken(token);
-                  // storage.write(key: "token", value: token);
-                   
-                 Navigator.push(
-                      context,
-                    MaterialPageRoute(
-                   builder: (context) =>Accueil()
-                    )
-                   );
+                   Navigator.pushNamed(context, '/accueil');
               }else{
                 print('error');
               }

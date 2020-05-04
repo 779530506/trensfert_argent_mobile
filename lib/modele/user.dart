@@ -1,14 +1,7 @@
 class User{
-  String username;
-  String password;
-  String token;
-  String nom;
-  String prenom;
-  String telephon;
-  String email;
-  String dateNaissance;
-  String roles;
-  String adresse;
+  String username, password, token, nom, prenom, telephon, email, role, adresse;
+  bool isActive;
+  DateTime dateNaissance;
   User({
     this.username,
     this.password, 
@@ -17,9 +10,10 @@ class User{
     this.prenom,
     this.dateNaissance,
     this.email,
-    this.roles,
+    this.role,
     this.telephon,
-    this.adresse
+    this.adresse,
+    this.isActive
      });
  factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -31,8 +25,9 @@ class User{
       email: json['email'],
       dateNaissance: json['dateNaissance'],
       telephon: json['telephon'],
-      roles: json['roles'],
+      role: json['role'],
       adresse: json['adresse'],
+      isActive: json['isActive']
     );
   }
 }

@@ -31,9 +31,19 @@ class _MenuState extends State<Menu> {
                 title: Text('User',style: TextStyle(fontSize: 20),),
                 onTap: (){
                   Navigator.of(context).pop();
-                 Navigator.push(context, MaterialPageRoute(builder: (context)=>UserList() ));
+                  Navigator.pushNamed(context, '/userList');
                 },
-              ),  
+              ), 
+        ListTile(
+                leading: Icon(
+                  Icons.person_add
+                 ) ,
+                title: Text('Add User',style: TextStyle(fontSize: 20),),
+                onTap: (){
+                  Navigator.of(context).pop();
+                  Navigator.pushNamed(context, '/userAdd');
+                },
+              ),   
        Divider(color: Colors.black54,),
        ListTile(
                 leading: Icon(

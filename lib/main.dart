@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:trensfert_argent_mobile/accueil.dart';
 import 'package:trensfert_argent_mobile/formConnexion.dart';
+import 'package:trensfert_argent_mobile/widget/formRegister.dart';
+import 'package:trensfert_argent_mobile/widget/userList.dart';
+import 'package:trensfert_argent_mobile/widget/userView.dart';
     main() {
-    runApp(MaterialApp(home: MyApp()));
+    runApp(MaterialApp(
+        initialRoute: '/',
+        routes: {
+          '/accueil': (context) => Accueil(),
+          '/userList': (context) => UserList(),
+          '/userAdd': (context) => FormRegister(),
+          },
+      home: MyApp()));
   } 
 
 class MyApp extends StatefulWidget {

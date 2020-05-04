@@ -90,7 +90,11 @@ class _UserListState extends State<UserList> {
                       Padding(
                         padding: const EdgeInsets.all(18.0),
                         child: FlatButton(
-                        child:Icon(Icons.edit),
+                        child:Icon(
+                          Icons.visibility,
+                          size: 30,
+                          color: Colors.lime
+                          ),
                        // color: Colors.blueGrey,
                         onPressed: (){
                           var id = users['hydra:member'][index]['id'];
@@ -99,8 +103,8 @@ class _UserListState extends State<UserList> {
                       context,
                      MaterialPageRoute(
                          builder: (context) =>UserView(id: id,),
-                    )
-                   );
+                      )
+                     );
                         },
                     ),
                   ),

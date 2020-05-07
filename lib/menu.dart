@@ -52,7 +52,7 @@ class _MenuState extends State<Menu> {
                 title: Text('Creation Compte',style: TextStyle(fontSize: 20),),
                 onTap: (){
                   Navigator.of(context).pop();
-                 // Navigator.push(context, MaterialPageRoute(builder: (context)=>Quiz() ));
+                 Navigator.pushNamed(context, '/creer_compte');
                 },
               ),    
        ListTile(
@@ -62,7 +62,7 @@ class _MenuState extends State<Menu> {
                 title: Text('Ajout Compte',style: TextStyle(fontSize: 20),),
                 onTap: (){
                   Navigator.of(context).pop();
-                 // Navigator.push(context, MaterialPageRoute(builder: (context)=>Quiz() ));
+                   Navigator.pushNamed(context, '/ajout_compte');
                 },
               ), 
        ListTile(

@@ -1,9 +1,10 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:trensfert_argent_mobile/service/environnement.dart';
 
 class AuthService  {
-  final baseUrl ='http://10.0.2.2:8000/api';
+  final baseUrl =Environnement().BASE_URL;
   SharedPreferences sharedPreferences;
 Future<String> get tokenOrEmpty async{
       sharedPreferences = await SharedPreferences.getInstance();

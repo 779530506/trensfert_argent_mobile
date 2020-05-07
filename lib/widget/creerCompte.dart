@@ -9,11 +9,11 @@ import 'package:http/http.dart' as http;
 import 'package:trensfert_argent_mobile/modele/role.dart';
 import 'package:trensfert_argent_mobile/modele/user.dart';
 import 'package:trensfert_argent_mobile/service/environnement.dart';
-class FormRegister extends StatefulWidget {
+class CreerCompte extends StatefulWidget {
   @override
-  _FormRegisterState createState() => _FormRegisterState();
+  _CreerCompteState createState() => _CreerCompteState();
 }
-class _FormRegisterState extends State<FormRegister> {
+class _CreerCompteState extends State<CreerCompte> {
   var data;
   bool autoValidate = true;
   bool readOnly = false;
@@ -202,6 +202,21 @@ class _FormRegisterState extends State<FormRegister> {
                         attribute: 'password',
                         validators: [FormBuilderValidators.required()],
                         decoration: InputDecoration(labelText: "Password"),
+                      ),
+                      FormBuilderTextField(
+                        attribute: 'solde',
+                        validators: [FormBuilderValidators.required(),FormBuilderValidators.numeric()],
+                        decoration: InputDecoration(labelText: "Solde"),
+                      ),
+                      FormBuilderTextField(
+                        attribute: 'ninena',
+                        validators: [FormBuilderValidators.required()],
+                        decoration: InputDecoration(labelText: "ninena"),
+                      ),
+                      FormBuilderTextField(
+                        attribute: 'registreDuCommerce',
+                        validators: [FormBuilderValidators.required()],
+                        decoration: InputDecoration(labelText: "registreDuCommerce"),
                       ),
                     ],
                   ),

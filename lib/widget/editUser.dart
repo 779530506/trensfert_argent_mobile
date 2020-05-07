@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:trensfert_argent_mobile/authService.dart';
 import 'package:trensfert_argent_mobile/modele/user.dart';
+import 'package:trensfert_argent_mobile/service/environnement.dart';
 import 'package:trensfert_argent_mobile/widget/userView.dart';
 class EditUser extends StatefulWidget {
   int id;
@@ -19,7 +20,7 @@ class _EditUserState extends State<EditUser> {
    Map<String,dynamic> user;
    String message;
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
-  final baseUrl ='http://10.0.2.2:8000/api';
+  final baseUrl =Environnement().BASE_URL;
   AuthService authService = new AuthService();
   Future<int>   putUser(User user) async{
         String url='$baseUrl/users/${widget.id}';

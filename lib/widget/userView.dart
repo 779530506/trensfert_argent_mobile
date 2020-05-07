@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:trensfert_argent_mobile/accueil.dart';
 import 'package:trensfert_argent_mobile/authService.dart';
+import 'package:trensfert_argent_mobile/service/environnement.dart';
 import 'package:trensfert_argent_mobile/widget/editUser.dart';
 import 'package:trensfert_argent_mobile/widget/userList.dart';
 class UserView extends StatefulWidget {
@@ -19,12 +20,32 @@ class _UserViewState extends State<UserView> {
     var sharedPreferences ;
     var user;
     String error;
-     final baseUrl ='http://10.0.2.2:8000/api';
+    int id;
+     final baseUrl =Environnement().BASE_URL;
     AuthService authService = AuthService();
     @override
     void initState() {
     super.initState();
     getUser();
+    this.id = widget.id;
+  }
+  setStatus(int id) async{
+       String url='$baseUrl/users/status/$id';
+        var token = await  authService.getToken();
+         http.get(
+               url,
+               headers: {HttpHeaders.authorizationHeader: "bearer $token"},
+          ).then(
+            (data){
+              if(data.statusCode==200){
+                this.alert(context,'Ok', 'Status changé avec succés');
+                }
+                else this.alert(context,'Erreur','${data.statusCode}');
+         }
+          ).catchError((error){
+            print(error);
+            this.alert(context,'Erreur', 'Serveur Innaccessible');
+          });   
   }
    getUser() async{
      String url='$baseUrl/users/${widget.id}';
@@ -43,7 +64,7 @@ class _UserViewState extends State<UserView> {
             print(error);
           });    
    }
-  Future<bool>  deleteUser() async{
+   deleteUser() async{
      String url='$baseUrl/users/${widget.id}';
         var token = await  authService.getToken();
          http.delete(
@@ -52,13 +73,17 @@ class _UserViewState extends State<UserView> {
           ).then(
             (data){
               if(data.statusCode==204){
-                return true;
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>Accueil()));
+                this.alert(context,'OK : code ${data.statusCode}', 'user supprimé avec succés');
+                //return true;
+                }else{
+                    this.alert(context,'Erreur: ${data.statusCode} ', ' impossible de supprimer');
                 }
-                return false;
+                
          }
           ).catchError((error){
             print(error);
-            return false;
+            this.alert(context,'Erreur', 'Serveur Innaccessible');
           });   
       return false;    
    }
@@ -66,11 +91,12 @@ class _UserViewState extends State<UserView> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-        title: Text(title),
-        content: Text(content),
+        title: Text(title,style: TextStyle(fontSize: 34),),
+        content: Text(content,style:TextStyle(fontSize: 25),),
         actions: <Widget>[
           FlatButton(
-            child: Text('ok'),
+            child: Text('Submit',style:TextStyle(fontSize: 25),),
+            color: Colors.lime,
             onPressed: () {
               Navigator.of(context).pop();
               // Navigator.push(context, MaterialPageRoute(builder: (context)=>Accueil()));
@@ -313,10 +339,10 @@ class _UserViewState extends State<UserView> {
                setState(()async {
                  var delete= await this.deleteUser();
                 if(delete){
-                  this.alert(context,'suppression', 'suppression avec succés');
-                 Navigator.push(context, MaterialPageRoute(builder: (context)=>Accueil()));
+                  //this.alert(context,'suppression', 'suppression avec succés');
+                 //Navigator.push(context, MaterialPageRoute(builder: (context)=>Accueil()));
                 }else{
-                  this.alert(context,'suppression', 'Impossible de supprimer cet utilisateur');         
+                 // this.alert(context,'suppression', 'Impossible de supprimer cet utilisateur');         
                 }
                });
 
@@ -339,8 +365,11 @@ class _UserViewState extends State<UserView> {
       ),
        ),
     Expanded(
-          child: IconButton(onPressed: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>EditUser(id: widget.id)));
+          child: IconButton(onPressed: () async{
+           this.setStatus(this.id);
+            setState(()  {
+              getUser();
+            });
       },
       icon: Icon(Icons.control_point_duplicate,
         color: Colors.teal,

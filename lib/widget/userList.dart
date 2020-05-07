@@ -15,7 +15,7 @@ class UserList extends StatefulWidget {
 
 class _UserListState extends State<UserList> {
   var sharedPreferences ;
-    var users;
+    var users=[];
     int currentPage=1;
     int size=7;
     int totalPage;
@@ -33,8 +33,15 @@ class _UserListState extends State<UserList> {
           ).then(
             (data){
              setState(() {
-              users = json.decode(data.body);
-              usersLength = users['hydra:totalItems'];
+             var users = json.decode(data.body);
+            usersLength = users['hydra:totalItems'];
+             users = users['hydra:member'];
+             for(var user in users){
+                 this.users.add(user);
+             }
+            
+             print(this.users);
+             
               if(usersLength % size == 0)
               totalPage = usersLength ~/ size;
               else
@@ -71,7 +78,7 @@ class _UserListState extends State<UserList> {
     return Scaffold(
       appBar:AppBar(title: Text("Les utilisateurs"),backgroundColor: Colors.teal,),
       //drawer: Menu(),
-      body: (users == null ?
+      body: (this.users == null ?
       Center(child: CircularProgressIndicator(),)
       :ListView.builder(
         controller: _scrollController,
@@ -83,22 +90,16 @@ class _UserListState extends State<UserList> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                    // Card(
-                    //   child:Text('username',style: TextStyle(fontSize: 22)) ,
-                    //   color: Colors.teal,
-                    //   ),
                       Padding(
-                        padding: const EdgeInsets.all(18.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: FlatButton(
                         child:Icon(
                           Icons.visibility,
                           size: 30,
                           color: Colors.lime
                           ),
-                       // color: Colors.blueGrey,
                         onPressed: (){
-                          var id = users['hydra:member'][index]['id'];
-                          print(id);
+                           var id = this.users[index]['id'];
                            Navigator.push(
                       context,
                      MaterialPageRoute(
@@ -108,10 +109,10 @@ class _UserListState extends State<UserList> {
                         },
                     ),
                   ),
-                    Text("${users['hydra:member'][index]['username']}", style: TextStyle(fontSize: 22),)
+                    Text("${this.users[index]['username']}", style: TextStyle(fontSize: 20),),
                 ],
                 ),
-            )
+            ),
           );
         },
         )

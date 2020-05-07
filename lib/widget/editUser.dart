@@ -1,31 +1,30 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:intl/intl.dart';
 import 'package:trensfert_argent_mobile/authService.dart';
-import 'package:http/http.dart' as http;
-import 'package:trensfert_argent_mobile/modele/role.dart';
 import 'package:trensfert_argent_mobile/modele/user.dart';
-class FormRegister extends StatefulWidget {
+import 'package:trensfert_argent_mobile/widget/userView.dart';
+class EditUser extends StatefulWidget {
+  int id;
+  EditUser({this.id});
   @override
-  _FormRegisterState createState() => _FormRegisterState();
+  _EditUserState createState() => _EditUserState();
 }
-class _FormRegisterState extends State<FormRegister> {
-  var data;
-  bool autoValidate = true;
-  bool readOnly = false;
-  bool showSegmentedControl = true;
-  String message;
-  List<Map<String,dynamic>> roleList=[];
+
+class _EditUserState extends State<EditUser> {
+   List<Map<String,dynamic>> roleList=[];
+   Map<String,dynamic> user;
+   String message;
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
   final baseUrl ='http://10.0.2.2:8000/api';
-  AuthService authService = AuthService();
- Future<int>   postUser(User user) async{
-        String url='$baseUrl/users';
+  AuthService authService = new AuthService();
+  Future<int>   putUser(User user) async{
+        String url='$baseUrl/users/${widget.id}';
         var token = await  authService.getToken();
-      return  http.post(
+      return  http.put(
             url,
             headers:  <String, String>{
                     'Content-Type': 'application/json',
@@ -39,7 +38,7 @@ class _FormRegisterState extends State<FormRegister> {
               "prenom":user.prenom,
              "email": user.email,
               "adresse": user.adresse,
-              "role":user.role,
+             // "role":user.role,
              "isActive": user.isActive,
               "dateNaissance": user.dateNaissance.toIso8601String(),
               "telephon": user.telephon
@@ -55,31 +54,15 @@ class _FormRegisterState extends State<FormRegister> {
           }
         );
     }
-   alert(context, String title,String content) =>
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-        title: Text(title,style: TextStyle( fontWeight: FontWeight.bold,fontSize: 40),),
-        content: Text(content, style: TextStyle(fontSize: 35),),
-        actions: <Widget>[
-          FlatButton(
-            color: Colors.teal,
-            child: Text('ok',style: TextStyle(fontSize: 35)),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-        )      
-      );
-      Future<bool> addUser(User user) async{
-      var statusCode = await postUser(user);
+ 
+    Future<bool> editUser(User user) async{
+      var statusCode = await putUser(user);
       if(statusCode == null){
-      this.alert(context, 'erreur', "Serveur inaccessible");
+      //this.alert(context, 'erreur', "Serveur inaccessible");
       }else if(statusCode >= 400 && statusCode < 500 ){
         this.alert(context, 'Erreur', this.message);
-       } else if(statusCode == 201){
-              this.alert(context, 'Success', "user enregistré avec success",);
+       } else if(statusCode == 200){
+              this.alert(context, 'OK', "user editer avec success",);
               return true;
         }
         else {
@@ -88,7 +71,7 @@ class _FormRegisterState extends State<FormRegister> {
         return false;
       
     } 
-     getroles() async{
+  getRoles() async{
      String url='$baseUrl/roles';
         var token = await  authService.getToken();
          http.get(
@@ -112,20 +95,68 @@ class _FormRegisterState extends State<FormRegister> {
             print(error);
           });     
    }
+   getUser() async{
+     String url='$baseUrl/users/${widget.id}';
+        var token = await  authService.getToken();
+         http.get(
+               url,
+               headers: {HttpHeaders.authorizationHeader: "bearer $token"},
+          ).then(
+            (data){
+             setState(() {
+              var user = json.decode(data.body);
+              this.user = {
+                'nom' : user['nom'],
+                'prenom': user['prenom'],
+                'adresse' : user['adresse'],
+                'email': user['email'],
+                'telephon' : user['telephon'],
+                'dateNaissance':DateTime.parse(user['dateNaissance']),
+                'isActive' : user['isActive'],
+                'role': user['role'],
+                'username' : user['username'],
+              };
+              print(this.user);
+            });
+         }
+          ).catchError((error){
+            print(error);
+          });     
+   }
+  alert(context, String title,String content) =>
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+        title: Text(title,style: TextStyle( fontWeight: FontWeight.bold,fontSize: 40),),
+        content: Text(content, style: TextStyle(fontSize: 35),),
+        actions: <Widget>[
+          FlatButton(
+            color: Colors.teal,
+            child: Text('ok',style: TextStyle(fontSize: 35)),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+        )      
+      );
    @override
   void initState() {
     super.initState();
-    getroles();
-  }
+    this.getUser();
+    //this.getRoles();
 
+  }
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:AppBar (
-        title: Text("User register"),
+      appBar: AppBar (
+        title: Text("User edit"),
         backgroundColor: Colors.teal,
        ),
-      body: Padding(
+      body: this.user == null ? Center(child: CircularProgressIndicator(),)
+      : Padding(
         padding: EdgeInsets.all(10),
         child: SingleChildScrollView(
           child: Column(
@@ -133,7 +164,16 @@ class _FormRegisterState extends State<FormRegister> {
               FormBuilder(
                 key: _fbKey,
                 initialValue: {
-                  'isActive': true,
+                'nom' : this.user['nom'],
+                'prenom': this.user['prenom'],
+                'adresse' : this.user['adresse'],
+                'email': this.user['email'],
+                'telephon' : this.user['telephon'],
+                'dateNaissance': this.user['dateNaissance'],
+                'isActive' : this.user['isActive'],
+                'role': this.user['role'],
+                'username' : this.user['username'],
+
                 },
                 autovalidate: false,
                 child: Padding(
@@ -164,26 +204,24 @@ class _FormRegisterState extends State<FormRegister> {
                         attribute: "dateNaissance",
                         inputType: InputType.date,
                         validators: [FormBuilderValidators.required()],
-                        //format: DateFormat("dd-MM-yyyy"),
                         decoration: InputDecoration(labelText: "Date de naissance",),
                       ),
-                      FormBuilderDropdown(
-                        attribute: "role",
-                        decoration: InputDecoration(labelText: "Role"),
-                        // initialValue: 'Male',
-                        hint: Text('Selectinner le role'),
-                        validators: [FormBuilderValidators.required()],
-                        items: this.roleList
-                            .map((role) => DropdownMenuItem(
-                            value:"${role['id']}",
-                            child: Text("${role['libelle']}")))
-                            .toList(),
-                      ),
+                      // FormBuilderDropdown(
+                      //   attribute: "role",
+                      //   decoration: InputDecoration(labelText: "Role"),
+                      //   hint: Text('Selectinner le role'),
+                      //   validators: [FormBuilderValidators.required()],
+                      //   items: this.roleList
+                      //       .map((role) => DropdownMenuItem(
+                      //       value:"${role['id']}",
+                      //       child: Text("${role['libelle']}")))
+                      //       .toList(),
+                      // ),
                       FormBuilderTextField(
                         attribute: "telephon",
                         decoration: InputDecoration(labelText: "telphon"),
                         validators: [
-                          FormBuilderValidators.maxLength(15),
+                          FormBuilderValidators.maxLength(25),
                           FormBuilderValidators.minLength(9)
                         ],
                       ),
@@ -194,7 +232,8 @@ class _FormRegisterState extends State<FormRegister> {
                       ),
                       FormBuilderTextField(
                         attribute: 'username',
-                        validators: [FormBuilderValidators.required()],
+                        validators: [FormBuilderValidators.maxLength(25),
+                          FormBuilderValidators.required()],
                         decoration: InputDecoration(labelText: "Username"),
                       ),
                       FormBuilderTextField(
@@ -229,15 +268,20 @@ class _FormRegisterState extends State<FormRegister> {
                               adresse: _fbKey.currentState.value['adresse'],
                               email: _fbKey.currentState.value['email'],
                               telephon: _fbKey.currentState.value['telephon'],
-                              role: _fbKey.currentState.value['role'],
+                              //role: _fbKey.currentState.value['role'],
                               isActive : _fbKey.currentState.value['isActive'],
                               username: _fbKey.currentState.value['username'],
                               password: _fbKey.currentState.value['password'],
                               dateNaissance:_fbKey.currentState.value['dateNaissance']
-                            );                            
-                            var enregistrer = await this.addUser(user);  
-                            if(enregistrer)
-                              _fbKey.currentState.reset();                 
+                            );  
+                            setState(() async{
+                              var enregistrer = await this.editUser(user);  
+                            if(enregistrer){
+                             Navigator.of(context).pop();
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>UserView(id: widget.id)));
+                            }
+                            });                          
+                                             
                           }
                         },
                       ),

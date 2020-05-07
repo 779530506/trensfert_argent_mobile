@@ -13,7 +13,51 @@ class _AccueilState extends State<Accueil> {
     return Scaffold(
       appBar:AppBar(title: Text("Bokicas"),backgroundColor: Colors.teal,),
       drawer: Menu(),
-      body: Center(child: Text("hello")),
+      body:  Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+           
+             new Stack(
+              children: <Widget>[
+                new Container(
+                  height: 160,
+                  width: 260,
+                  child: Center(child: Icon(Icons.account_balance,size: 120,),),
+                )
+              ],
+            ),
+       new Stack(
+              children: <Widget>[
+                new Container(
+                  height: 160,
+                  width: 320,
+                  decoration: new BoxDecoration(
+                    borderRadius: new BorderRadius.circular(50),
+                    color: Colors.black12
+                  ),
+                  child: Center(child: Text("BokiCash",style: TextStyle(fontSize: 65),)),
+                )
+              ],
+            ),
+             new Stack(
+              children: <Widget>[
+                new Container(
+                  height: 160,
+                  width: 370,
+                  decoration: new BoxDecoration(
+                    borderRadius: new BorderRadius.circular(50),
+                   // color: Colors.black12
+                  ),
+                  child: Center(child: Text("Bienvenue !",style: TextStyle(fontSize: 65,
+                  color: Colors.lime,fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic),)),
+                )
+              ],
+            )
+          ],
+          )
+        ),
     );
   }
 }

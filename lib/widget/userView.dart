@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:trensfert_argent_mobile/accueil.dart';
 import 'package:trensfert_argent_mobile/authService.dart';
+import 'package:trensfert_argent_mobile/widget/editUser.dart';
 import 'package:trensfert_argent_mobile/widget/userList.dart';
 class UserView extends StatefulWidget {
   //@required
@@ -17,7 +18,6 @@ class UserView extends StatefulWidget {
 class _UserViewState extends State<UserView> {
     var sharedPreferences ;
     var user;
-    bool delete = false;
     String error;
      final baseUrl ='http://10.0.2.2:8000/api';
     AuthService authService = AuthService();
@@ -43,7 +43,7 @@ class _UserViewState extends State<UserView> {
             print(error);
           });    
    }
-    deleteUser() async{
+  Future<bool>  deleteUser() async{
      String url='$baseUrl/users/${widget.id}';
         var token = await  authService.getToken();
          http.delete(
@@ -51,23 +51,16 @@ class _UserViewState extends State<UserView> {
                headers: {HttpHeaders.authorizationHeader: "bearer $token"},
           ).then(
             (data){
-              print(data.body);
-              print(data.statusCode);
-              setState(() {
               if(data.statusCode==204){
-                delete = true;
+                return true;
                 }
-                else {
-                  delete = false;
-                  throw Exception('Impossible de supprimer');
-                }
-              });
+                return false;
          }
           ).catchError((error){
             print(error);
-            delete = false;
+            return false;
           });   
-          
+      return false;    
    }
    alert(context, String title,String content) =>
       showDialog(
@@ -317,8 +310,8 @@ class _UserViewState extends State<UserView> {
          Expanded(
            child: IconButton(
              onPressed: (){
-               setState(() {
-                 this.deleteUser();
+               setState(()async {
+                 var delete= await this.deleteUser();
                 if(delete){
                   this.alert(context,'suppression', 'suppression avec succés');
                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Accueil()));
@@ -337,6 +330,7 @@ class _UserViewState extends State<UserView> {
          ),
        Expanded(
           child: IconButton(onPressed: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>EditUser(id: widget.id)));
       },
       icon: Icon(Icons.edit,
         color: Colors.teal,
@@ -344,7 +338,16 @@ class _UserViewState extends State<UserView> {
         ),
       ),
        ),
-      
+    Expanded(
+          child: IconButton(onPressed: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>EditUser(id: widget.id)));
+      },
+      icon: Icon(Icons.control_point_duplicate,
+        color: Colors.teal,
+        size: 42,
+        ),
+      ),
+       ),
       ],
     ),
   )

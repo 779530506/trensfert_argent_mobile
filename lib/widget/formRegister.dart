@@ -143,11 +143,13 @@ class _FormRegisterState extends State<FormRegister> {
                     children: <Widget>[
                       FormBuilderTextField(
                         attribute: 'nom',
+                        style: TextStyle(fontSize: 22),
                         validators: [FormBuilderValidators.required()],
                         decoration: InputDecoration(labelText: "Nom"),
                       ),
                       FormBuilderTextField(
                         attribute: 'prenom',
+                        style: TextStyle(fontSize: 22),
                         validators: [FormBuilderValidators.required()],
                         decoration: InputDecoration(labelText: "Prenom",),
                       ),
@@ -158,11 +160,13 @@ class _FormRegisterState extends State<FormRegister> {
                       ),
                       FormBuilderTextField(
                         attribute: 'adresse',
+                        style: TextStyle(fontSize: 22),
                         validators: [FormBuilderValidators.required()],
                         decoration: InputDecoration(labelText: "Adresse"),
                       ),
                       FormBuilderDateTimePicker(
                         attribute: "dateNaissance",
+                        style: TextStyle(fontSize: 22),
                         inputType: InputType.date,
                         validators: [FormBuilderValidators.required()],
                         //format: DateFormat("dd-MM-yyyy"),
@@ -170,9 +174,8 @@ class _FormRegisterState extends State<FormRegister> {
                       ),
                       FormBuilderDropdown(
                         attribute: "role",
-                        decoration: InputDecoration(labelText: "Role"),
                         // initialValue: 'Male',
-                        hint: Text('Selectinner le role'),
+                        hint: Text('Selectinner le role',style: TextStyle(fontSize: 22),),
                         validators: [FormBuilderValidators.required()],
                         items: this.roleList
                             .map((role) => DropdownMenuItem(
@@ -182,6 +185,7 @@ class _FormRegisterState extends State<FormRegister> {
                       ),
                       FormBuilderTextField(
                         attribute: "telephon",
+                        style: TextStyle(fontSize: 22),
                         decoration: InputDecoration(labelText: "telphon"),
                         validators: [
                           FormBuilderValidators.maxLength(15),
@@ -191,15 +195,17 @@ class _FormRegisterState extends State<FormRegister> {
                       FormBuilderCheckbox(
                         attribute: 'isActive',
                         label: Text(
-                            "Status")
+                            "Status",style: TextStyle(fontSize: 22),)
                       ),
                       FormBuilderTextField(
                         attribute: 'username',
+                        style: TextStyle(fontSize: 22),
                         validators: [FormBuilderValidators.required()],
                         decoration: InputDecoration(labelText: "Username"),
                       ),
                       FormBuilderTextField(
                         attribute: 'password',
+                        style: TextStyle(fontSize: 22),
                         validators: [FormBuilderValidators.required()],
                         decoration: InputDecoration(labelText: "Password"),
                       ),

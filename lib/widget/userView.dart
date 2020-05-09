@@ -47,7 +47,7 @@ class _UserViewState extends State<UserView> {
             this.alert(context,'Erreur', 'Serveur Innaccessible');
           });   
   }
-   getUser() async{
+ getUser() async{
      String url='$baseUrl/users/${widget.id}';
         var token = await  authService.getToken();
          http.get(
@@ -64,7 +64,7 @@ class _UserViewState extends State<UserView> {
             print(error);
           });    
    }
-   deleteUser() async{
+  deleteUser() async{
      String url='$baseUrl/users/${widget.id}';
         var token = await  authService.getToken();
          http.delete(

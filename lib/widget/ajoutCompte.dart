@@ -22,8 +22,7 @@ class _AjoutCompteState extends State<AjoutCompte> {
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
   final baseUrl =Environnement().BASE_URL;
   AuthService authService = AuthService();
-  String ninea;
-      postCompte(compte) async{
+  postCompte(compte) async{
         String url='$baseUrl/comptes';
         var token = await  authService.getToken();
       return  http.post(

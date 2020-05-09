@@ -56,7 +56,7 @@ class _FormRegisterState extends State<FormRegister> {
           }
         );
     }
-   alert(context, String title,String content) =>
+ alert(context, String title,String content) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -73,7 +73,8 @@ class _FormRegisterState extends State<FormRegister> {
         ],
         )      
       );
-      Future<bool> addUser(User user) async{
+   }
+ Future<bool> addUser(User user) async{
       var statusCode = await postUser(user);
       if(statusCode == null){
       this.alert(context, 'erreur', "Serveur inaccessible");
@@ -89,7 +90,7 @@ class _FormRegisterState extends State<FormRegister> {
         return false;
       
     } 
-     getroles() async{
+ getroles() async{
      String url='$baseUrl/roles';
         var token = await  authService.getToken();
          http.get(

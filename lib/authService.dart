@@ -5,15 +5,15 @@ import 'package:trensfert_argent_mobile/service/environnement.dart';
 
 class AuthService  {
   final baseUrl =Environnement().BASE_URL;
-  SharedPreferences sharedPreferences;
-Future<String> get tokenOrEmpty async{
+static SharedPreferences sharedPreferences;
+static Future<String>  get tokenOrEmpty async{
       sharedPreferences = await SharedPreferences.getInstance();
       var token = await sharedPreferences.get('token') ?? 0;
        //print(jsonDecode(token)['token']);
        if(token == null) return "";
        return token;
 }
-    getToken() async {
+  static  getToken() async {
     var tok = await tokenOrEmpty;
     String jwt = jsonDecode(tok)['token'];
      return jwt ;

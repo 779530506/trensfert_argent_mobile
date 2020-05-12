@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:trensfert_argent_mobile/modele/role.dart';
 import 'package:trensfert_argent_mobile/modele/user.dart';
 import 'package:trensfert_argent_mobile/service/environnement.dart';
+import 'package:trensfert_argent_mobile/widget/Alert.dart';
 class FormRegister extends StatefulWidget {
   @override
   _FormRegisterState createState() => _FormRegisterState();
@@ -22,10 +23,9 @@ class _FormRegisterState extends State<FormRegister> {
   List<Map<String,dynamic>> roleList=[];
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
   final baseUrl =Environnement().BASE_URL;
-  AuthService authService = AuthService();
  Future<int>   postUser(User user) async{
         String url='$baseUrl/users';
-        var token = await  authService.getToken();
+        var token = await  AuthService.getToken();
       return  http.post(
             url,
             headers:  <String, String>{
@@ -56,43 +56,25 @@ class _FormRegisterState extends State<FormRegister> {
           }
         );
     }
- alert(context, String title,String content) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-        title: Text(title,style: TextStyle( fontWeight: FontWeight.bold,fontSize: 40),),
-        content: Text(content, style: TextStyle(fontSize: 35),),
-        actions: <Widget>[
-          FlatButton(
-            color: Colors.teal,
-            child: Text('ok',style: TextStyle(fontSize: 35)),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-        )      
-      );
-   }
- Future<bool> addUser(User user) async{
+  Future<bool> addUser(User user) async{
       var statusCode = await postUser(user);
       if(statusCode == null){
-      this.alert(context, 'erreur', "Serveur inaccessible");
+      AlertMessage.alert(context, 'erreur', "Serveur inaccessible");
       }else if(statusCode >= 400 && statusCode < 500 ){
-        this.alert(context, 'Erreur', this.message);
+        AlertMessage.alert(context, 'Erreur', this.message);
        } else if(statusCode == 201){
-              this.alert(context, 'Success', "user enregistré avec success",);
+              AlertMessage.alert(context, 'Success', "user enregistré avec success",);
               return true;
         }
         else {
-          this.alert(context, 'Erreur', '$statusCode');
+          AlertMessage.alert(context, 'Erreur', '$statusCode');
         }
         return false;
       
     } 
  getroles() async{
      String url='$baseUrl/roles';
-        var token = await  authService.getToken();
+        var token = await  AuthService.getToken();
          http.get(
                url,
                headers: {HttpHeaders.authorizationHeader: "bearer $token"},
@@ -125,7 +107,7 @@ class _FormRegisterState extends State<FormRegister> {
     return Scaffold(
       appBar:AppBar (
         title: Text("User register"),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.deepOrange,
        ),
       body: Padding(
         padding: EdgeInsets.all(10),
@@ -223,7 +205,7 @@ class _FormRegisterState extends State<FormRegister> {
                       padding: const EdgeInsets.all(8.0),
                       child: RaisedButton(
                         child: Text("Submit",style: TextStyle(fontSize: 22,color: Colors.white54),),
-                        color: Colors.teal,
+                        color: Colors.deepOrange,
                         shape: new RoundedRectangleBorder(
                             borderRadius: new BorderRadius.circular(5.0),
                             ),

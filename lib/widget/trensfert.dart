@@ -1,31 +1,27 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:intl/intl.dart';
 import 'package:trensfert_argent_mobile/authService.dart';
+import 'package:http/http.dart' as http;
+import 'package:trensfert_argent_mobile/modele/role.dart';
 import 'package:trensfert_argent_mobile/modele/user.dart';
 import 'package:trensfert_argent_mobile/service/environnement.dart';
 import 'package:trensfert_argent_mobile/widget/Alert.dart';
-import 'package:trensfert_argent_mobile/widget/userView.dart';
-class EditUser extends StatefulWidget {
-  int id;
-  EditUser({this.id});
+class Trensfert extends StatefulWidget {
   @override
-  _EditUserState createState() => _EditUserState();
+  _TrensfertState createState() => _TrensfertState();
 }
-
-class _EditUserState extends State<EditUser> {
-   List<Map<String,dynamic>> roleList=[];
-   Map<String,dynamic> user;
-   String message;
+class _TrensfertState extends State<Trensfert> {
+  String message;
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
   final baseUrl =Environnement().BASE_URL;
-  Future<int>   putUser(User user) async{
-        String url='$baseUrl/users/${widget.id}';
+ Future<int>   postUser(User user) async{
+        String url='$baseUrl/users';
         var token = await  AuthService.getToken();
-      return  http.put(
+      return  http.post(
             url,
             headers:  <String, String>{
                     'Content-Type': 'application/json',
@@ -39,7 +35,7 @@ class _EditUserState extends State<EditUser> {
               "prenom":user.prenom,
              "email": user.email,
               "adresse": user.adresse,
-             // "role":user.role,
+              "role":user.role,
              "isActive": user.isActive,
               "dateNaissance": user.dateNaissance.toIso8601String(),
               "telephon": user.telephon
@@ -55,15 +51,14 @@ class _EditUserState extends State<EditUser> {
           }
         );
     }
- 
-    Future<bool> editUser(User user) async{
-      var statusCode = await putUser(user);
+  Future<bool> addUser(User user) async{
+      var statusCode = await postUser(user);
       if(statusCode == null){
-      //AlertMessage.alertMessage.alert(context, 'erreur', "Serveur inaccessible");
+      AlertMessage.alert(context, 'erreur', "Serveur inaccessible");
       }else if(statusCode >= 400 && statusCode < 500 ){
         AlertMessage.alert(context, 'Erreur', this.message);
-       } else if(statusCode == 200){
-              AlertMessage.alert(context, 'OK', "user editer avec success",);
+       } else if(statusCode == 201){
+              AlertMessage.alert(context, 'Success', "user enregistré avec success",);
               return true;
         }
         else {
@@ -72,76 +67,19 @@ class _EditUserState extends State<EditUser> {
         return false;
       
     } 
-  getRoles() async{
-     String url='$baseUrl/roles';
-        var token = await  AuthService.getToken();
-         http.get(
-               url,
-               headers: {HttpHeaders.authorizationHeader: "bearer $token"},
-          ).then(
-            (data){
-             setState(() {
-              var roles = json.decode(data.body);
-              roles=roles['hydra:member'];
-              for(var role in roles){
-                this.roleList.add( {
-                  'id' : role['@id'],
-                  'libelle':role['libelle']
-                });
-               
-              }
-            });
-         }
-          ).catchError((error){
-            print(error);
-          });     
-   }
-   getUser() async{
-     String url='$baseUrl/users/${widget.id}';
-        var token = await  AuthService.getToken();
-         http.get(
-               url,
-               headers: {HttpHeaders.authorizationHeader: "bearer $token"},
-          ).then(
-            (data){
-             setState(() {
-              var user = json.decode(data.body);
-              this.user = {
-                'nom' : user['nom'],
-                'prenom': user['prenom'],
-                'adresse' : user['adresse'],
-                'email': user['email'],
-                'telephon' : user['telephon'],
-                'dateNaissance':DateTime.parse(user['dateNaissance']),
-                'isActive' : user['isActive'],
-                'role': user['role'],
-                'username' : user['username'],
-              };
-              print(this.user);
-            });
-         }
-          ).catchError((error){
-            print(error);
-          });     
-   }
- 
-   @override
+    @override
   void initState() {
     super.initState();
-    this.getUser();
-    //this.getRoles();
-
   }
- 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar (
-        title: Text("User edit"),
+      appBar:AppBar (
+        title: Text("User register"),
         backgroundColor: Colors.deepOrange,
        ),
-      body: this.user == null ? Center(child: CircularProgressIndicator(),)
-      : Padding(
+      body: Padding(
         padding: EdgeInsets.all(10),
         child: SingleChildScrollView(
           child: Column(
@@ -149,16 +87,7 @@ class _EditUserState extends State<EditUser> {
               FormBuilder(
                 key: _fbKey,
                 initialValue: {
-                'nom' : this.user['nom'],
-                'prenom': this.user['prenom'],
-                'adresse' : this.user['adresse'],
-                'email': this.user['email'],
-                'telephon' : this.user['telephon'],
-                'dateNaissance': this.user['dateNaissance'],
-                'isActive' : this.user['isActive'],
-                'role': this.user['role'],
-                'username' : this.user['username'],
-
+                  'isActive': true,
                 },
                 autovalidate: false,
                 child: Padding(
@@ -167,11 +96,13 @@ class _EditUserState extends State<EditUser> {
                     children: <Widget>[
                       FormBuilderTextField(
                         attribute: 'nom',
+                        style: TextStyle(fontSize: 22),
                         validators: [FormBuilderValidators.required()],
                         decoration: InputDecoration(labelText: "Nom"),
                       ),
                       FormBuilderTextField(
                         attribute: 'prenom',
+                        style: TextStyle(fontSize: 22),
                         validators: [FormBuilderValidators.required()],
                         decoration: InputDecoration(labelText: "Prenom",),
                       ),
@@ -182,47 +113,41 @@ class _EditUserState extends State<EditUser> {
                       ),
                       FormBuilderTextField(
                         attribute: 'adresse',
+                        style: TextStyle(fontSize: 22),
                         validators: [FormBuilderValidators.required()],
                         decoration: InputDecoration(labelText: "Adresse"),
                       ),
                       FormBuilderDateTimePicker(
                         attribute: "dateNaissance",
+                        style: TextStyle(fontSize: 22),
                         inputType: InputType.date,
                         validators: [FormBuilderValidators.required()],
+                        //format: DateFormat("dd-MM-yyyy"),
                         decoration: InputDecoration(labelText: "Date de naissance",),
                       ),
-                      // FormBuilderDropdown(
-                      //   attribute: "role",
-                      //   decoration: InputDecoration(labelText: "Role"),
-                      //   hint: Text('Selectinner le role'),
-                      //   validators: [FormBuilderValidators.required()],
-                      //   items: this.roleList
-                      //       .map((role) => DropdownMenuItem(
-                      //       value:"${role['id']}",
-                      //       child: Text("${role['libelle']}")))
-                      //       .toList(),
-                      // ),
                       FormBuilderTextField(
                         attribute: "telephon",
+                        style: TextStyle(fontSize: 22),
                         decoration: InputDecoration(labelText: "telphon"),
                         validators: [
-                          FormBuilderValidators.maxLength(25),
+                          FormBuilderValidators.maxLength(15),
                           FormBuilderValidators.minLength(9)
                         ],
                       ),
                       FormBuilderCheckbox(
                         attribute: 'isActive',
                         label: Text(
-                            "Status")
+                            "Status",style: TextStyle(fontSize: 22),)
                       ),
                       FormBuilderTextField(
                         attribute: 'username',
-                        validators: [FormBuilderValidators.maxLength(25),
-                          FormBuilderValidators.required()],
+                        style: TextStyle(fontSize: 22),
+                        validators: [FormBuilderValidators.required()],
                         decoration: InputDecoration(labelText: "Username"),
                       ),
                       FormBuilderTextField(
                         attribute: 'password',
+                        style: TextStyle(fontSize: 22),
                         validators: [FormBuilderValidators.required()],
                         decoration: InputDecoration(labelText: "Password"),
                       ),
@@ -253,20 +178,15 @@ class _EditUserState extends State<EditUser> {
                               adresse: _fbKey.currentState.value['adresse'],
                               email: _fbKey.currentState.value['email'],
                               telephon: _fbKey.currentState.value['telephon'],
-                              //role: _fbKey.currentState.value['role'],
+                              role: _fbKey.currentState.value['role'],
                               isActive : _fbKey.currentState.value['isActive'],
                               username: _fbKey.currentState.value['username'],
                               password: _fbKey.currentState.value['password'],
                               dateNaissance:_fbKey.currentState.value['dateNaissance']
-                            );  
-                            setState(() async{
-                              var enregistrer = await this.editUser(user);  
-                            if(enregistrer){
-                             Navigator.of(context).pop();
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>UserView(id: widget.id)));
-                            }
-                            });                          
-                                             
+                            );                            
+                            // var enregistrer = await this.addUser(user);  
+                            // if(enregistrer)
+                            //   _fbKey.currentState.reset();                 
                           }
                         },
                       ),

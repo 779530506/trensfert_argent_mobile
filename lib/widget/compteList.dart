@@ -4,49 +4,46 @@ import 'package:trensfert_argent_mobile/authService.dart';
 import 'package:trensfert_argent_mobile/menu.dart';
 import 'package:http/http.dart' as http;
 import 'package:trensfert_argent_mobile/service/environnement.dart';
+import 'package:trensfert_argent_mobile/widget/compteView.dart';
 import 'dart:convert';
 
 import 'package:trensfert_argent_mobile/widget/userView.dart';
 
 
-class UserList extends StatefulWidget {
+class CompteList extends StatefulWidget {
   @override
-  _UserListState createState() => _UserListState();
+  _CompteListState createState() => _CompteListState();
 }
 
-class _UserListState extends State<UserList> {
+class _CompteListState extends State<CompteList> {
   var sharedPreferences ;
-    var users=[];
+    var comptes=[];
     int currentPage=1;
     int size=7;
     int totalPage;
-    int usersLength;
+    int comptesLength;
      ScrollController _scrollController = new ScrollController();
      final baseUrl =Environnement().BASE_URL;
-   getUsers() async{
-     String url='$baseUrl/users?page=$currentPage';
+   getComptes() async{
+     String url='$baseUrl/comptes?page=$currentPage';
         var token = await  AuthService.getToken();
         print(token);
-         http.get(
+        http.get(
                url,
                headers: {HttpHeaders.authorizationHeader: "bearer $token"},
           ).then(
             (data){
              setState(() {
-             var users = json.decode(data.body);
-            usersLength = users['hydra:totalItems'];
-             users = users['hydra:member'];
-             for(var user in users){
-                 this.users.add(user);
+             var comptes = json.decode(data.body);
+             comptesLength = comptes['hydra:totalItems'];
+             comptes = comptes['hydra:member'];
+             for(var compte in comptes){
+                 this.comptes.add(compte);
              }
-            
-             print(this.users);
-             
-              if(usersLength % size == 0)
-              totalPage = usersLength ~/ size;
+              if(comptesLength % size == 0)
+              totalPage = comptesLength ~/ size;
               else
-              totalPage = (usersLength/size).floor();
-              print(totalPage);
+              totalPage = (comptesLength/size).floor();
             });
          }
           ).catchError((error){
@@ -57,17 +54,18 @@ class _UserListState extends State<UserList> {
   @override
   void initState() {
     super.initState();
-    getUsers();
+    getComptes();
      _scrollController.addListener((){
       if(_scrollController.position.pixels==_scrollController.position.maxScrollExtent){
         if(currentPage<totalPage){
         ++currentPage;
-        this.getUsers();
+        this.getComptes();
         }
 
       }
     });
   }
+  
    @override
   void dispose() {
     super.dispose();
@@ -76,13 +74,12 @@ class _UserListState extends State<UserList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:AppBar(title: Text("Les utilisateurs"),backgroundColor: Colors.deepOrange,),
-      //drawer: Menu(),
-      body: (this.users.length == 0 ?
+      appBar:AppBar(title: Text("Les comptes"),backgroundColor: Colors.deepOrange,),
+      body: (this.comptes.length == 0 ?
       Center(child: CircularProgressIndicator(),)
       :ListView.builder(
         controller: _scrollController,
-        itemCount: (users==null ? 0 : users.length),
+        itemCount: (comptes==null ? 0 : comptes.length),
         itemBuilder: (context, index){
           return Card(
             child: Padding(
@@ -99,17 +96,25 @@ class _UserListState extends State<UserList> {
                           color: Colors.deepOrange
                           ),
                         onPressed: (){
-                           var id = this.users[index]['id'];
+                           var id = this.comptes[index]['id'];
+                          // var date = this.comptes[index]['createdDate'];
+                           print(id);
                            Navigator.push(
-                      context,
-                     MaterialPageRoute(
-                         builder: (context) =>UserView(id: id,),
-                      )
-                     );
+                            context,
+                                MaterialPageRoute(
+                                    builder: (context) =>CompteView(id: id,),
+                              )
+                            );
                         },
                     ),
                   ),
-                    Text("${this.users[index]['username']}", style: TextStyle(fontSize: 20),),
+                    Text("${this.comptes[index]['numeroCompte']}", style: TextStyle(fontSize: 20),),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(30,0,0,0),
+                      child: Text("${this.comptes[index]['solde']}   Fcfa",
+                       style: TextStyle(fontSize: 20,color: Colors.deepOrangeAccent, fontStyle: FontStyle.italic,
+                       fontWeight: FontWeight.bold),),
+                    ),
                 ],
                 ),
             ),

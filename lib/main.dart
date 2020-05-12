@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:trensfert_argent_mobile/accueil.dart';
 import 'package:trensfert_argent_mobile/formConnexion.dart';
 import 'package:trensfert_argent_mobile/widget/ajoutCompte.dart';
+import 'package:trensfert_argent_mobile/widget/compteList.dart';
 import 'package:trensfert_argent_mobile/widget/creerCompte.dart';
+import 'package:trensfert_argent_mobile/widget/depot.dart';
 import 'package:trensfert_argent_mobile/widget/formRegister.dart';
+import 'package:trensfert_argent_mobile/widget/trensfert.dart';
 import 'package:trensfert_argent_mobile/widget/userList.dart';
 import 'package:trensfert_argent_mobile/widget/userView.dart';
     main() {
@@ -15,6 +18,9 @@ import 'package:trensfert_argent_mobile/widget/userView.dart';
           '/userAdd': (context) => FormRegister(),
           '/creer_compte': (context) => CreerCompte(),
           '/ajout_compte': (context) => AjoutCompte(),
+          '/compte_list': (context) => CompteList(),
+          '/depot': (context) => Depot(),
+          '/trensfert': (context) => Trensfert(),
           },
       home: MyApp()));
   } 
@@ -31,7 +37,7 @@ class _MyAppState extends State<MyApp> {
       Scaffold(
       appBar:AppBar (
         title: Text("BokiCash"),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.deepOrange,
       ),
       body: FormConnexion(),
     );

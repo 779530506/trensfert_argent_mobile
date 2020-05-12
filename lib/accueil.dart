@@ -11,7 +11,7 @@ class _AccueilState extends State<Accueil> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:AppBar(title: Text("Bokicas"),backgroundColor: Colors.teal,),
+      appBar:AppBar(title: Text("Bokicas"),backgroundColor: Colors.deepOrange,),
       drawer: Menu(),
       body:  Center(
         child: Column(
@@ -50,7 +50,7 @@ class _AccueilState extends State<Accueil> {
                    // color: Colors.black12
                   ),
                   child: Center(child: Text("Bienvenue !",style: TextStyle(fontSize: 65,
-                  color: Colors.lime,fontWeight: FontWeight.bold,
+                  color: Colors.deepOrange,fontWeight: FontWeight.bold,
                   fontStyle: FontStyle.italic),)),
                 )
               ],

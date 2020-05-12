@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:trensfert_argent_mobile/modele/partenaire.dart';
 import 'package:trensfert_argent_mobile/modele/user.dart';
 import 'package:trensfert_argent_mobile/service/environnement.dart';
+import 'package:trensfert_argent_mobile/widget/Alert.dart';
 class CreerCompte extends StatefulWidget {
   @override
   _CreerCompteState createState() => _CreerCompteState();
@@ -18,10 +19,9 @@ class _CreerCompteState extends State<CreerCompte> {
   List<Map<String,dynamic>> roleList=[];
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
   final baseUrl =Environnement().BASE_URL;
-  AuthService authService = AuthService();
  postUser(User user, Partenaire partenaire,int solde) async{
         String url='$baseUrl/users';
-        var token = await  authService.getToken();
+        var token = await  AuthService.getToken();
       return  http.post(
             url,
             headers:  <String, String>{
@@ -49,13 +49,13 @@ class _CreerCompteState extends State<CreerCompte> {
                partenaire.idUserPartenaire=user['@id'];
                this.postPartenaire(partenaire,solde,user['id']);
             }else{
-              alert(context, "Erreur", "${this.message}");
+              AlertMessage.alert(context, "Erreur", "${this.message}");
             }
           }
         ).catchError(
           (error){
             print(error);
-            alert(context, "Erreur", "Serveur inaccessible");
+            AlertMessage.alert(context, "Erreur", "Serveur inaccessible");
           }
         );
     }
@@ -64,7 +64,7 @@ class _CreerCompteState extends State<CreerCompte> {
    */
   postPartenaire(Partenaire partenaire, int solde, int idUser) async{
         String url='$baseUrl/partenaires';
-        var token = await  authService.getToken();
+        var token = await  AuthService.getToken();
       return  http.post(
             url,
             headers:  <String, String>{
@@ -84,7 +84,7 @@ class _CreerCompteState extends State<CreerCompte> {
               this.postCompte(solde, part['@id'],part['id'],idUser);
             }else{
              this.deleteUser(idUser);
-             alert(context, "Erreur:${data.statusCode}", "${this.message} "); 
+             AlertMessage.alert(context, "Erreur:${data.statusCode}", "${this.message} "); 
             }
           }
         ).catchError(
@@ -100,7 +100,7 @@ class _CreerCompteState extends State<CreerCompte> {
    */
   postCompte(solde,String partenaire,int idPartenaire,int idUser) async{
         String url='$baseUrl/comptes';
-        var token = await  authService.getToken();
+        var token = await  AuthService.getToken();
       return  http.post(
             url,
             headers:  <String, String>{
@@ -119,26 +119,26 @@ class _CreerCompteState extends State<CreerCompte> {
             this.message=(jsonDecode(data.body)['hydra:description']);
             if(data.statusCode == 201){
               var numero = compte['numeroCompte'];       
-              alert(context, "OK:${data.statusCode}", "compte créer avec succés \n numero : $numero");
+              AlertMessage.alert(context, "OK:${data.statusCode}", "compte créer avec succés \n numero : $numero");
               _fbKey.currentState.reset();
             }else{
               this.deletePartenaire(idPartenaire);
               this.deleteUser(idUser);
-              alert(context, "Erreur", "${this.message}");
+              AlertMessage.alert(context, "Erreur", "${this.message}");
             }
           }
         ).catchError(
           (error){
             this.deletePartenaire(idPartenaire);
             this.deleteUser(idUser);
-            alert(context, "Erreur", "Serveur inaccessible");
+            AlertMessage.alert(context, "Erreur", "Serveur inaccessible");
             print(error);
           }
         );
     }
   deleteUser(int id) async{
      String url='$baseUrl/users/$id';
-        var token = await  authService.getToken();
+        var token = await  AuthService.getToken();
          http.delete(
                url,
                headers: {HttpHeaders.authorizationHeader: "bearer $token"},
@@ -146,33 +146,15 @@ class _CreerCompteState extends State<CreerCompte> {
    }
   deletePartenaire(int id) async{
      String url='$baseUrl/partenaires/$id';
-        var token = await  authService.getToken();
+        var token = await  AuthService.getToken();
          http.delete(
                url,
                headers: {HttpHeaders.authorizationHeader: "bearer $token"},
          );   
    }
-
-   alert(context, String title,String content) =>
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-        title: Text(title,style: TextStyle( fontWeight: FontWeight.bold,fontSize: 40),),
-        content: Text(content, style: TextStyle(fontSize: 30),),
-        actions: <Widget>[
-          FlatButton(
-            color: Colors.teal,
-            child: Text('ok',style: TextStyle(fontSize: 25)),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-        )      
-      );
 getroles() async{
      String url='$baseUrl/roles';
-        var token = await  authService.getToken();
+        var token = await  AuthService.getToken();
          http.get(
                url,
                headers: {HttpHeaders.authorizationHeader: "bearer $token"},
@@ -205,7 +187,7 @@ getroles() async{
     return Scaffold(
       appBar:AppBar (
         title: Text("User register"),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.deepOrange,
        ),
       body: Padding(
         padding: EdgeInsets.all(10),
@@ -328,7 +310,7 @@ getroles() async{
                       padding: const EdgeInsets.all(8.0),
                       child: RaisedButton(
                         child: Text("Submit",style: TextStyle(fontSize: 22,color: Colors.white70),),
-                        color: Colors.teal,
+                        color: Colors.deepOrange,
                         shape: new RoundedRectangleBorder(
                             borderRadius: new BorderRadius.circular(5.0),
                             ),

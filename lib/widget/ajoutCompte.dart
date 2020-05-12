@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:trensfert_argent_mobile/modele/role.dart';
 import 'package:trensfert_argent_mobile/modele/user.dart';
 import 'package:trensfert_argent_mobile/service/environnement.dart';
+import 'package:trensfert_argent_mobile/widget/Alert.dart';
 class AjoutCompte extends StatefulWidget {
   @override
   _AjoutCompteState createState() => _AjoutCompteState();
@@ -21,10 +22,9 @@ class _AjoutCompteState extends State<AjoutCompte> {
   bool enregistrer = false;
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
   final baseUrl =Environnement().BASE_URL;
-  AuthService authService = AuthService();
   postCompte(compte) async{
         String url='$baseUrl/comptes';
-        var token = await  authService.getToken();
+        var token = await  AuthService.getToken();
       return  http.post(
             url,
             headers:  <String, String>{
@@ -43,7 +43,7 @@ class _AjoutCompteState extends State<AjoutCompte> {
             print(compte['numeroCompte']);
             if(data.statusCode == 201){
               var numero = compte['numeroCompte'];       
-              alert(context, "OK:${data.statusCode}", "compte créer avec succés \n numero : $numero");
+              AlertMessage.alert(context, "OK:${data.statusCode}", "compte créer avec succés \n numero : $numero");
              
             }
           }
@@ -53,28 +53,9 @@ class _AjoutCompteState extends State<AjoutCompte> {
           }
         );
     }
-  
-   alert(context, String title,String content,) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-        title: Text(title,style: TextStyle( fontWeight: FontWeight.bold,fontSize: 30),),
-        content: Text(content, style: TextStyle(fontSize: 25),),
-        actions: <Widget>[
-          FlatButton(
-            color: Colors.teal,
-            child: Text('ok',style: TextStyle(fontSize: 35)),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-        )      
-      );
-   }
   getPartenaireByNinea(String ninea, solde) async{
      String url='$baseUrl/partenaires/ninea/$ninea';
-        var token = await  authService.getToken();
+        var token = await  AuthService.getToken();
         print(ninea);
          http.get(
                url,
@@ -92,7 +73,7 @@ class _AjoutCompteState extends State<AjoutCompte> {
                 this.postCompte(compte);
               }else{
                 var message = json.decode(data.body);
-                alert(context, "Erreur:${data.statusCode}", "${message['message']}");             
+                AlertMessage.alert(context, "Erreur:${data.statusCode}", "${message['message']}");             
               }
               }
           ).catchError((error){
@@ -110,14 +91,14 @@ class _AjoutCompteState extends State<AjoutCompte> {
     return Scaffold(
       appBar:AppBar (
         title: Text("Ajouter un compte"),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.deepOrange,
        ),
       body: SingleChildScrollView(
               child: Padding(
           padding: EdgeInsets.all(10),
           child: Column(   
             children: <Widget>[
-              Icon(Icons.computer, size: 150,color: Colors.lime,),
+              Icon(Icons.computer, size: 150,color: Colors.deepOrange,),
               FormBuilder(
                 key: _fbKey,
                 initialValue: {
@@ -159,7 +140,7 @@ class _AjoutCompteState extends State<AjoutCompte> {
                         padding: const EdgeInsets.all(28.0),
                         child: RaisedButton(
                           child: Text("Submit",style: TextStyle(fontSize: 35,color: Colors.white70),),
-                          color: Colors.teal,
+                          color: Colors.deepOrange,
                           shape: new RoundedRectangleBorder(
                               borderRadius: new BorderRadius.circular(10.0),
                               ),

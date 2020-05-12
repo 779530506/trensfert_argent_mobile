@@ -66,7 +66,7 @@ class _FormConnexionState extends State<FormConnexion> {
                     shape: new RoundedRectangleBorder(
                           borderRadius: new BorderRadius.circular(5.0),
                           ),
-                    color: Colors.teal,
+                    color: Colors.deepOrange,
                 onPressed: () async {
                   var username = _usernameController.text;
                   var password = _passwordController.text;

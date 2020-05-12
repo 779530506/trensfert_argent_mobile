@@ -16,7 +16,7 @@ class _MenuState extends State<Menu> {
        DrawerHeader(
          decoration:BoxDecoration(
            gradient: LinearGradient(
-             colors: [Colors.teal, Colors.green]
+             colors: [Colors.deepOrange, Colors.green]
              ) ,
            ),
          child: Center(
@@ -72,7 +72,7 @@ class _MenuState extends State<Menu> {
                 title: Text('liste Comptes',style: TextStyle(fontSize: 20),),
                 onTap: (){
                   Navigator.of(context).pop();
-                 // Navigator.push(context, MaterialPageRoute(builder: (context)=>Quiz() ));
+                  Navigator.pushNamed(context, '/compte_list');
                 },
               ),
        Divider(color: Colors.black54,),
@@ -83,7 +83,7 @@ class _MenuState extends State<Menu> {
                 title: Text('Dépot',style: TextStyle(fontSize: 20),),
                 onTap: (){
                   Navigator.of(context).pop();
-                 // Navigator.push(context, MaterialPageRoute(builder: (context)=>Quiz() ));
+                 Navigator.pushNamed(context, '/depot');
                 },
               ),
        Divider(color: Colors.black54,),
@@ -94,7 +94,7 @@ class _MenuState extends State<Menu> {
                 title: Text('Trensfert',style: TextStyle(fontSize: 20),),
                 onTap: (){
                   Navigator.of(context).pop();
-                 // Navigator.push(context, MaterialPageRoute(builder: (context)=>Quiz() ));
+                 Navigator.pushNamed(context, '/trensfert');
                 },
               ),  
        ListTile(

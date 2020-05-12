@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:trensfert_argent_mobile/accueil.dart';
 import 'package:trensfert_argent_mobile/authService.dart';
 import 'package:trensfert_argent_mobile/service/environnement.dart';
+import 'package:trensfert_argent_mobile/widget/Alert.dart';
 import 'package:trensfert_argent_mobile/widget/editUser.dart';
 import 'package:trensfert_argent_mobile/widget/userList.dart';
 class UserView extends StatefulWidget {
@@ -22,7 +23,6 @@ class _UserViewState extends State<UserView> {
     String error;
     int id;
      final baseUrl =Environnement().BASE_URL;
-    AuthService authService = AuthService();
     @override
     void initState() {
     super.initState();
@@ -31,25 +31,25 @@ class _UserViewState extends State<UserView> {
   }
   setStatus(int id) async{
        String url='$baseUrl/users/status/$id';
-        var token = await  authService.getToken();
+        var token = await  AuthService.getToken();
          http.get(
                url,
                headers: {HttpHeaders.authorizationHeader: "bearer $token"},
           ).then(
             (data){
               if(data.statusCode==200){
-                this.alert(context,'Ok', 'Status changé avec succés');
+                AlertMessage.alert(context,'Ok', 'Status changé avec succés');
                 }
-                else this.alert(context,'Erreur','${data.statusCode}');
+                else AlertMessage.alert(context,'Erreur','${data.statusCode}');
          }
           ).catchError((error){
             print(error);
-            this.alert(context,'Erreur', 'Serveur Innaccessible');
+            AlertMessage.alert(context,'Erreur', 'Serveur Innaccessible');
           });   
   }
  getUser() async{
      String url='$baseUrl/users/${widget.id}';
-        var token = await  authService.getToken();
+        var token = await  AuthService.getToken();
          http.get(
                url,
                headers: {HttpHeaders.authorizationHeader: "bearer $token"},
@@ -66,7 +66,7 @@ class _UserViewState extends State<UserView> {
    }
   deleteUser() async{
      String url='$baseUrl/users/${widget.id}';
-        var token = await  authService.getToken();
+        var token = await  AuthService.getToken();
          http.delete(
                url,
                headers: {HttpHeaders.authorizationHeader: "bearer $token"},
@@ -74,40 +74,20 @@ class _UserViewState extends State<UserView> {
             (data){
               if(data.statusCode==204){
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>Accueil()));
-                this.alert(context,'OK : code ${data.statusCode}', 'user supprimé avec succés');
+                AlertMessage.alert(context,'OK : code ${data.statusCode}', 'user supprimé avec succés');
                 //return true;
                 }else{
-                    this.alert(context,'Erreur: ${data.statusCode} ', ' impossible de supprimer');
+                    AlertMessage.alert(context,'Erreur: ${data.statusCode} ', ' impossible de supprimer');
                 }
                 
          }
           ).catchError((error){
             print(error);
-            this.alert(context,'Erreur', 'Serveur Innaccessible');
+            AlertMessage.alert(context,'Erreur', 'Serveur Innaccessible');
           });   
       return false;    
    }
-   alert(context, String title,String content) =>
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-        title: Text(title,style: TextStyle(fontSize: 34),),
-        content: Text(content,style:TextStyle(fontSize: 25),),
-        actions: <Widget>[
-          FlatButton(
-            child: Text('Submit',style:TextStyle(fontSize: 25),),
-            color: Colors.lime,
-            onPressed: () {
-              Navigator.of(context).pop();
-              // Navigator.push(context, MaterialPageRoute(builder: (context)=>Accueil()));
-            },
-          ),
-        ],
-        )
-
-        
-      );
-
+   
    isActive(){
      if(user['isActive'])
      return Icon(Icons.lock_open, color: Colors.green, size: 30,);
@@ -117,7 +97,7 @@ class _UserViewState extends State<UserView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     appBar:AppBar(title: Text("Imformation personnelles"),backgroundColor: Colors.teal,),
+     appBar:AppBar(title: Text("Imformation personnelles"),backgroundColor: Colors.deepOrange,),
      body: (user == null ?
       Center(child: CircularProgressIndicator(),)
       :view()
@@ -132,7 +112,7 @@ class _UserViewState extends State<UserView> {
     Expanded(
       flex: 1,
           child: Card(
-          color: Colors.lime,
+          color: Colors.deepOrange,
           child: 
           Padding(
             padding: const EdgeInsets.all(8),
@@ -215,7 +195,7 @@ class _UserViewState extends State<UserView> {
             Expanded(
                child: ListTile(
                  leading:Icon(Icons.email,
-                 color: Colors.lime,
+                 color: Colors.deepOrange,
                   size: 25,
                  ) ,
                  title: Text('${user['email']}',
@@ -241,7 +221,7 @@ class _UserViewState extends State<UserView> {
               child: ListTile(
                  leading:Icon(
                   Icons.date_range,
-                  color: Colors.lime,
+                  color: Colors.deepOrange,
                   size: 25,
                  ) ,
                  title: Text('${DateFormat('dd/MM/yyyy').format(DateTime.parse(user['dateNaissance']))}',
@@ -270,7 +250,7 @@ class _UserViewState extends State<UserView> {
                child: ListTile(
                  leading:Icon(
                   Icons.call,
-                  color: Colors.lime,
+                  color: Colors.deepOrange,
                   size: 25,
                  ) ,
                  title: Text('${user['telephon']}',
@@ -296,7 +276,7 @@ class _UserViewState extends State<UserView> {
                child: ListTile(
                  leading:Icon(
                   Icons.location_on,
-                  color: Colors.lime,
+                  color: Colors.deepOrange,
                   size: 25,
                  ) ,
                  title: Text('${user['adresse']}',
@@ -339,10 +319,10 @@ class _UserViewState extends State<UserView> {
                setState(()async {
                  var delete= await this.deleteUser();
                 if(delete){
-                  //this.alert(context,'suppression', 'suppression avec succés');
+                  //AlertMessage.alert(context,'suppression', 'suppression avec succés');
                  //Navigator.push(context, MaterialPageRoute(builder: (context)=>Accueil()));
                 }else{
-                 // this.alert(context,'suppression', 'Impossible de supprimer cet utilisateur');         
+                 // AlertMessage.alert(context,'suppression', 'Impossible de supprimer cet utilisateur');         
                 }
                });
 
@@ -359,7 +339,7 @@ class _UserViewState extends State<UserView> {
           Navigator.push(context, MaterialPageRoute(builder: (context)=>EditUser(id: widget.id)));
       },
       icon: Icon(Icons.edit,
-        color: Colors.teal,
+        color: Colors.deepOrange,
         size: 42,
         ),
       ),
@@ -372,7 +352,7 @@ class _UserViewState extends State<UserView> {
             });
       },
       icon: Icon(Icons.control_point_duplicate,
-        color: Colors.teal,
+        color: Colors.deepOrange,
         size: 42,
         ),
       ),
